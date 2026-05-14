@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dream Poem Generator</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#7dd3fc;
+      --muted:#94a3b8;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:
+        radial-gradient(800px 300px at 10% 10%, rgba(125,211,252,0.06), transparent 10%),
+        radial-gradient(700px 300px at 90% 90%, rgba(168,85,247,0.04), transparent 10%),
+        var(--bg);
+      color:#e6eef8;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+    }
+    .wrap{
+      width:100%;
+      max-width:920px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 8px 30px rgba(2,6,23,0.7);
+      border-radius:12px;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:0;
+    }
+    .panel{
+      padding:22px;
+    }
+    .left{
+      background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+      border-right:1px dashed rgba(255,255,255,0.02);
+    }
+    h1{
+      margin:0 0 12px 0;
+      font-size:20px;
+      letter-spacing:0.2px;
+    }
+    p.lead{
+      margin:0 0 18px 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .row{
+      display:flex;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .field{
+      flex:1;
+    }
+    input[type="text"], input[type="number"], textarea, select {
+      width:100%;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.04);
+      background:var(--glass);
+      color:inherit;
+      outline:none;
+      font-size:14px;
+      box-sizing:border-box;
+    }
+    input[type="number"]::-webkit-inner-spin-button { opacity: 0.5; }
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:8px;
+      align-items:center;
+    }
+    button{
+      cursor:pointer;
+      padding:10px 14px;
+      border-radius:10px;
+      border:0;
+      font-weight:600;
+      background:linear-gradient(180deg,var(--accent), #38bdf8);
+      color:#062024;
+      box-shadow: 0 6px 18px rgba(56,189,248,0.12);
+    }
+    button.secondary{
+      background:transparent;
+      color:var(--accent);
+      border:1px solid rgba(125,211,252,0.12);
+      box-shadow:none;
+      font-weight:600;
+    }
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
+    .right{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .poemCard{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      border-radius:10px;
+      padding:18px;
+      margin:18px;
+      min-height:260px;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      gap:12px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .poem{
+      white-space:pre-wrap;
+      font-size:16px;
+      line-height:1.55;
+      color:#e7f9ff;
+      margin:0;
+    }
+    .meta{
+      font-size:13px;
+      color:var(--muted);
+    }
+    .footer{
+      margin-top:auto;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .controls{display:flex;gap:8px;margin-left:auto}
+    .copyBtn{
+      background:transparent;
+      color:var(--accent);
+      border:1px solid rgba(125,211,252,0.12);
+      padding:8px 10px;
+      border-radius:8px;
+    }
+    .seed{
+      width:88px;
+    }
+    @media (max-width:760px){
+      .wrap{grid-template-columns:1fr}
+      .left{border-right:none;border-bottom:1px dashed rgba(255,255,255,0.02)}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="application" aria-label="Dream Poem Generator">
+    <div class="panel left">
+      <h1>Dream Poem Generator</h1>
+      <p class="lead">Enter your name, age, and dream. Click "Generate" to craft a short, encouraging wisdom-poem tailored for you.</p>
+
+      <div class="row">
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" type="text" placeholder="e.g. Maya" maxlength="40" />
+        </div>
+        <div class="field" style="max-width:140px">
+          <label for="age">Age</label>
+          <input id="age" type="number" min="0" max="150" placeholder="e.g. 29" />
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <label for="dream">Dream</label>
+        <input id="dream" type="text" placeholder="e.g. start a community garden, write a novel, become a pilot" />
+      </div>
+
+      <div>
+        <label for="tone">Tone</label>
+        <select id="tone" aria-label="Select tone">
+          <option value="gentle">Gentle & reflective</option>
+          <option value="bold">Bold & energizing</option>
+          <option value="balanced" selected>Balanced & wise</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button id="generateBtn" title="Generate poem">Generate</button>
+        <button id="regenBtn" class="secondary" title="Regenerate with same inputs">Regenerate</button>
+        <button id="clearBtn" class="secondary" title="Clear inputs">Clear</button>
+        <div style="flex:1"></div>
+      </div>
+
+      <div class="hint">Tip: Leave age blank for a timeless poem. Use name and dream for stronger personalization.</div>
+    </div>
+
+    <div class="panel right">
+      <div class="poemCard" aria-live="polite" aria-atomic="true">
+        <div class="meta small">Your poem</div>
+        <pre id="output" class="poem" aria-label="Generated poem">Your personalized poem will appear here after you click Generate.</pre>
+        <div class="footer">
+          <div class="small" id="attribution">Made with care.</div>
+          <div class="controls">
+            <button id="copyBtn" class="copyBtn" title="Copy poem">Copy</button>
+            <button id="downloadBtn" class="copyBtn" title="Download as text">Download</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:0 18px 18px 18px; color:var(--muted); font-size:13px">
+        Quick help: The poem blends wisdom and practical guidance — little steps, steady learning, kindness to self, and consistent effort toward your dream.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Utility: escape user text to avoid accidental HTML injection
+    function esc(s){
+      return String(s || '').replace(/[&<>"']/g, function(c){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+      });
+    }
+
+    function agePhrase(age){
+      if (!Number.isFinite(age)) return 'a heart full of possibility';
+      if (age < 13) return 'a bright, curious young heart';
+      if (age < 20) return 'a bold, dreaming youth';
+      if (age < 31) return 'a brave stride into the future';
+      if (age < 51) return 'steady hands and open eyes';
+      if (age < 71) return 'seasoned wisdom and new appetite';
+      return 'a wise soul with room to wonder';
+    }
+
+    // Variants to add variety
+    const openings = [
+      "Listen, {name}, to the hush before your day:",
+      "{name}, there is a quiet map within your chest:",
+      "Dear {name}, keep this like a lantern in your pocket:",
+      "For {name}, who tends a dream like a small flame:",
+      "{name}, in the space between breath and step:"
+    ];
+    const middles = [
+      "Begin with what you can do today — a tiny, honest task.",
+      "Plant one small seed: learn, try, fail, and then try again.",
+      "Let curiosity be your compass; practice turns it into skill.",
+      "Trade comparison for patience; steady rhythm wins the race.",
+      "Ask for help when the path seems thick; community makes roads."
+    ];
+    const middles2 = [
+      "Keep the work simple and the heart generous.",
+      "Celebrate little victories; they are the bricks of triumph.",
+      "Turn mistakes into teachers; each stumble teaches a handhold.",
+      "Make space for rest — resilience is not endless burn.",
+      "Measure progress by consistency, not by speed alone."
+    ];
+    const closes = [
+      "One step and then another — this is how mountains become hills.",
+      "Hold the image of {dream} and keep taking small, brave steps.",
+      "Tend your dream gently. Time and courage will tend it into bloom.",
+      "When fear knocks, answer with curiosity; when doubt lingers, answer with practice.",
+      "Go on. The world needs the shape only your dream can make."
+    ];
+
+    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+    function generateText(name, age, dream, tone){
+      const n = name ? esc(name.trim()) : 'Friend';
+      const d = dream ? esc(dream.trim()) : 'your dream';
+      const aNum = Number(age);
+      const aPhrase = agePhrase(Number.isFinite(aNum) ? aNum : NaN);
+
+      // Choose variants with subtle bias by tone
+      function chooseWeighted(pool){
+        const w = {gentle:0.6, balanced:1, bold:1.4}[tone] || 1;
+        // If bold, more likely to pick first (energetic) entries by shuffling differently
+        const idx = Math.floor(Math.pow(Math.random(), 1/w) * pool.length);
+        return pool[idx] || pool[0];
+      }
+
+      const open = chooseWeighted(openings).replace('{name}', n);
+      const midA = chooseWeighted(middles);
+      const midB = chooseWeighted(middles2);
+      const close = chooseWeighted(closes).replace('{dream}', d);
+
+      // Add an age-reflective line
+      const ageLine = (Number.isFinite(aNum) ? ("At " + aNum + ", you carry " + aPhrase + ".") : ("You carry " + aPhrase + "."));
+
+      // Compose with gentle punctuation and line breaks
+      const stanza = [
+        open,
+        ageLine,
+        "",
+        midA,
+        midB,
+        "",
+        close,
+        "",
+        "With belief — and steady hands,",
+        "— go make " + d + " real."
+      ];
+
+      return stanza.join("\n");
+    }
+
+    // Wire UI
+    const outEl = document.getElementById('output');
+    const nameEl = document.getElementById('name');
+    const ageEl = document.getElementById('age');
+    const dreamEl = document.getElementById('dream');
+    const toneEl = document.getElementById('tone');
+    const genBtn = document.getElementById('generateBtn');
+    const regenBtn = document.getElementById('regenBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    function renderPoem(){
+      const name = nameEl.value.trim();
+      const ageVal = ageEl.value.trim();
+      const age = ageVal === '' ? NaN : Number(ageVal);
+      const dream = dreamEl.value.trim();
+
+      if (!name && !dream){
+        outEl.textContent = "Please enter at least a name or a dream to personalize the poem.\n\nExample: Name = Maya, Dream = write a novel.";
+        return;
+      }
+
+      const poem = generateText(name, age, dream, toneEl.value);
+      outEl.textContent = poem;
+    }
+
+    genBtn.addEventListener('click', function(){
+      renderPoem();
+      genBtn.blur();
+    });
+
+    regenBtn.addEventListener('click', function(){
+      // Slight visual effect: re-generate without changing inputs
+      renderPoem();
+    });
+
+    clearBtn.addEventListener('click', function(){
+      nameEl.value = '';
+      ageEl.value = '';
+      dreamEl.value = '';
+      outEl.textContent = "Your personalized poem will appear here after you click Generate.";
+    });
+
+    copyBtn.addEventListener('click', async function(){
+      try{
+        await navigator.clipboard.writeText(outEl.textContent);
+        copyBtn.textContent = 'Copied';
+        setTimeout(()=> copyBtn.textContent = 'Copy', 1200);
+      }catch(e){
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = outEl.textContent;
+        document.body.appendChild(ta);
+        ta.select();
+        try{ document.execCommand('copy'); copyBtn.textContent = 'Copied'; setTimeout(()=> copyBtn.textContent = 'Copy',1200); } catch(e){}
+        ta.remove();
+      }
+    });
+
+    downloadBtn.addEventListener('click', function(){
+      const name = nameEl.value.trim() || 'poem';
+      const filename = (name.replace(/\s+/g,'_') || 'poem') + '_dream.txt';
+      const blob = new Blob([outEl.textContent], {type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Allow Enter in fields to generate
+    [nameEl, ageEl, dreamEl].forEach(el=>{
+      el.addEventListener('keydown', function(e){
+        if (e.key === 'Enter'){
+          e.preventDefault();
+          renderPoem();
+        }
+      });
+    });
+
+    // Small accessibility: focus first field
+    nameEl.focus();
+  </script>
+</body>
+</html>
